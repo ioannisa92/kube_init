@@ -47,16 +47,6 @@ spec:
             nvidia.com/gpu: 0
             memory: "28G"
             ephemeral-storage: "178G"
-        #command: ['bash', 'expr_train_wrap.sh','all','VAE','./saved_models/AllData_VAE.model', './results/AllData_VAE_train_results.npy']
-        #command: ['bash', 'expr_train_wrap.sh','all','AE','./saved_models/AllData_AE.model', './results/AllData_AE_train_results.npy']
-        #command: ['bash', 'drug_train_wrap.sh','./data/prism_smiles.tsv','./saved_models/DrugNet_PrismMOA_classifier.3layer.model', './results/DrugNet_PrismMOA_3layer_classifier_cv_results.npy']
-        #command: ['bash','cv_wrap.sh','all', '10','AE','./results/AllData_AE_cv_results.npy']
-        #command: ['bash','gcn_dr_wrap.sh']
-        #command: ['bash','expr_dr_wrap.sh','1','False']
-        #command: ['bash','fullmodel_dr_wrap.sh','True', 'True']
-        #command: ['bash','DrugCell_train.sh']
-        #command: ['bash', 'MorganNet_MOAclassifier_train_wrap.sh']
-        #command: ['bash', 'MorganNet_DRregressor_train_wrap.sh']
         command: ['python', 'app.py']
       restartPolicy: Never
       volumes:
