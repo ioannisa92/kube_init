@@ -1,0 +1,69 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  # Prefix name of job with user and timestamp
+  #name: $USER
+  name: example
+  namespace: stuartlab
+spec:
+  backoffLimit: 0
+  # Delete the log after a minute
+  ttlSecondsAfterFinished: 60
+  template:
+    spec:
+      containers:
+      - name: magic
+        image: $DOCKERHUB_ACCOUNT/kube_test:latest
+        imagePullPolicy: Always
+        env:
+        - name: USER
+          value: $USER
+        - name: PRP
+          value: "https://s3.nautilus.optiputer.net"
+        - name: MYDATA
+          value: /data/
+        - name: MYOUT # outdir pod, defined by the docker image
+          value: /results/
+        - name: S3DATA
+          value: users/ianastop/data/
+        - name: S3OUT
+          value: users/ianastop/out/ 
+        volumeMounts:
+        - mountPath: /data
+          name: ianastop-storage
+        - mountPath: /root/.aws/
+          name: s3-credentials
+          readOnly: true
+        - mountPath: /out
+          name: ianastop-out
+        resources:
+          requests:
+            cpu: "2"
+            nvidia.com/gpu: 0
+            memory: "5G"
+            ephemeral-storage: "80G"
+          limits:
+            cpu: "19"
+            nvidia.com/gpu: 0
+            memory: "28G"
+            ephemeral-storage: "178G"
+        #command: ['bash', 'expr_train_wrap.sh','all','VAE','./saved_models/AllData_VAE.model', './results/AllData_VAE_train_results.npy']
+        #command: ['bash', 'expr_train_wrap.sh','all','AE','./saved_models/AllData_AE.model', './results/AllData_AE_train_results.npy']
+        #command: ['bash', 'drug_train_wrap.sh','./data/prism_smiles.tsv','./saved_models/DrugNet_PrismMOA_classifier.3layer.model', './results/DrugNet_PrismMOA_3layer_classifier_cv_results.npy']
+        #command: ['bash','cv_wrap.sh','all', '10','AE','./results/AllData_AE_cv_results.npy']
+        #command: ['bash','gcn_dr_wrap.sh']
+        #command: ['bash','expr_dr_wrap.sh','1','False']
+        #command: ['bash','fullmodel_dr_wrap.sh','True', 'True']
+        #command: ['bash','DrugCell_train.sh']
+        #command: ['bash', 'MorganNet_MOAclassifier_train_wrap.sh']
+        #command: ['bash', 'MorganNet_DRregressor_train_wrap.sh']
+        command: ['python', 'app.py']
+      restartPolicy: Never
+      volumes:
+      - name: ianastop-storage
+        emptyDir: {}
+      - name: ianastop-out
+        emptyDir: {}  
+      - name: s3-credentials
+        secret:
+          secretName: yianni-secret
